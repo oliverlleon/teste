@@ -1,0 +1,2022 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estudo Pessoal</title>
+
+    <!-- 
+    ====================================================================
+    INÍCIO DAS ADIÇÕES PARA PWA (APP)
+    ==================================================================== 
+    -->
+    
+    <!-- NOVA TAG 'BASE' APONTANDO PARA SEU REPOSITÓRIO -->
+    <base href="/destaques/">
+
+    <!-- Cor da barra de status e navegador (usa a cor do seu cabeçalho) -->
+    <meta name="theme-color" content="#3e5a8a">
+
+    <!-- Link para o Manifest (Android e Padrão) -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Tags Específicas para iOS (Apple) -->
+
+    <!-- Habilita o modo de app em tela cheia -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    
+    <!-- Nome que aparece abaixo do ícone no iOS -->
+    <meta name="apple-mobile-web-app-title" content="Estudo">
+    
+    <!-- Aparência da barra de status no iOS (preta, para combinar com seu app) -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- Ícone principal para a tela inicial do iOS (180x180) -->
+    <link rel="apple-touch-icon" href="icons/icon-180.png">
+    
+    <!-- 
+    Ícone do Favicon (substituído pelo seu ícone local)
+    Você precisará criar este arquivo "favicon.png"
+    -->
+    <link rel="icon" type="image/png" href="icons/favicon.png">
+
+    <!-- 
+    ====================================================================
+    FIM DAS ADIÇÕES PARA PWA (APP)
+    ==================================================================== 
+    -->
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configura o Tailwind CSS para usar a estratégia de 'class' para o modo escuro.
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .bg-custom-blue {
+            background-color: #3e5a8a;
+        }
+        .hover\:bg-custom-blue-dark:hover {
+            background-color: #3e5a8a;
+        }
+        .tab-active {
+            color: #2563eb;
+            border-bottom: 2px solid #2563eb;
+        }
+        .dark .tab-active {
+            color: #60a5fa; /* text-blue-400 */
+            border-bottom-color: #60a5fa;
+        }
+        .tab-inactive {
+            color: #6b7280;
+        }
+        .dark .tab-inactive {
+            color: #9ca3af; /* text-gray-400 */
+        }
+        .tab-inactive:hover {
+            color: #2563eb;
+        }
+        .dark .tab-inactive:hover {
+            color: #60a5fa;
+        }
+        /* Estilos para a notificação (Toast) */
+        .toast {
+            transition: opacity 0.3s, transform 0.3s;
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        /* Estilo para capítulo com destaque */
+        .has-highlight {
+            background-color: #4a6da7;
+            color: white;
+            border-color: #3e5a8a;
+        }
+        .has-highlight:hover {
+            background-color: #3e5a8a;
+        }
+        /* Estilos para o Modal */
+        .modal-overlay {
+            transition: opacity 0.2s ease-in-out;
+        }
+        /* Estilo para o seletor de pesquisa */
+        .search-type-btn.active {
+            background-color: #3b82f6; /* bg-blue-600 */
+            color: white;
+        }
+        /* Oculta a barra de rolagem */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        /* Estilos para o Modal de Sucesso */
+        #success-modal {
+            transition: opacity 0.3s ease-in-out;
+            opacity: 0;
+        }
+        #success-modal > div {
+             transition: transform 0.3s ease-in-out;
+             transform: scale(0.95);
+        }
+        #success-modal.show {
+            opacity: 1;
+        }
+        #success-modal.show > div {
+            transform: scale(1);
+        }
+        /* Estilos da tela de Login */
+        .book-title {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.05);
+            font-weight: bold;
+            white-space: nowrap;
+            will-change: transform;
+            animation: float 20s linear infinite;
+            user-select: none;
+        }
+        @keyframes float {
+            from { transform: translateX(100vw); }
+            to { transform: translateX(-100%); }
+        }
+        #login-form.shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+            transform: translate3d(0, 0, 0);
+        }
+        @keyframes shake {
+          10%, 90% { transform: translate3d(-1px, 0, 0); }
+          20%, 80% { transform: translate3d(2px, 0, 0); }
+          30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+          40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+
+    <!-- Tela de Login -->
+    <div id="login-screen" class="fixed inset-0 bg-gray-800 z-50 flex flex-col items-center justify-center p-4 transition-opacity duration-1000 ease-in-out">
+        <div class="absolute inset-0 overflow-hidden">
+            <!-- Nomes dos livros animados serão inseridos aqui via JS -->
+        </div>
+        <div class="relative z-10 text-center text-white w-full max-w-sm">
+            <h1 class="text-4xl md:text-5xl font-bold mb-2 text-shadow">Bem-vindo</h1>
+            <p class="text-lg text-gray-300 mb-8">Acesse seu estudo pessoal</p>
+            <form id="login-form">
+                <input type="email" id="login-email" class="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="E-mail" required>
+                <input type="password" id="login-password" class="w-full mt-4 px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Senha" required>
+                <p id="login-error" class="text-red-400 h-6 mt-2 text-sm"></p>
+                <button type="submit" class="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-lg">Entrar</button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="app-content" class="hidden">
+
+        <header class="fixed top-0 left-0 right-0 bg-custom-blue text-white p-4 shadow-md z-20 flex items-center justify-center relative" style="height: 4rem;">
+            <!-- Título Centralizado -->
+            <div id="header-title" class="flex items-center cursor-pointer min-w-0">
+                <svg class="w-6 h-6 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                <h1 class="text-xl font-bold truncate">Estudo Pessoal</h1>
+            </div>
+        
+            <!-- Botão de Perfil e Menu Dropdown -->
+            <div class="absolute right-4 top-1/2 -translate-y-1/2">
+                <button id="profile-button" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white font-semibold text-lg hover:bg-white/30 transition-colors focus:outline-none">
+                    <span id="profile-initials"></span>
+                </button>
+
+                <!-- Menu Dropdown (Oculto por padrão) -->
+                <div id="profile-menu" class="hidden absolute right-0 mt-2 w-56 bg-white dark:bg-gray-700 rounded-md shadow-lg z-50 text-gray-800 dark:text-gray-200 ring-1 ring-black ring-opacity-5">
+                    <div class="p-4 border-b border-gray-200 dark:border-gray-600">
+                        <p class="font-medium truncate" id="profile-menu-name">Nome do Usuário</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 truncate" id="profile-menu-email">email@usuario.com</p>
+                    </div>
+                    <button id="profile-menu-logout" class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        <span>Sair</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 
+          Este container segura todo o conteúdo (incluindo a nav) e 
+          começa *abaixo* do header fixo (graças ao padding-top).
+        -->
+        <div class="container mx-auto p-2 sm:p-6 md:p-8 max-w-6xl" style="padding-top: 2rem;">
+            <div class="bg-white dark:bg-gray-800 shadow-md min-h-screen rounded-lg">
+
+                <nav class="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 z-10 rounded-t-lg">
+                    <!-- 
+                      ====================================================================
+                      ALTERAÇÃO (SWIPE): Adicionada classe "no-swipe"
+                      ==================================================================== 
+                    -->
+                    <div class="px-4 py-3 flex items-center space-x-5 overflow-x-auto whitespace-nowrap no-scrollbar no-swipe">
+                        <a href="#" id="tab-inicio" class="text-sm font-semibold pb-3 tab-active flex-shrink-0 flex items-center">
+                            ● INICIO
+                        </a>
+                        <a href="#" id="tab-livros" class="text-sm font-semibold pb-3 tab-inactive flex-shrink-0 flex items-center">
+                            <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 1.25l-7.5 7.5 7.5 7.5 7.5-7.5-7.5-7.5z"></path></svg>
+                            JOIAS
+                        </a>
+                        <a href="#" id="tab-pesquisas" class="text-sm font-semibold pb-3 tab-inactive flex-shrink-0 flex items-center">
+                            <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 1.25l-7.5 7.5 7.5 7.5 7.5-7.5-7.5-7.5z"></path></svg>
+                            PESQUISAS
+                        </a>
+                        <a href="#" id="tab-adicionar-destaque" class="text-sm font-semibold pb-3 tab-inactive flex-shrink-0">ADD. JOIA</a>
+                        <a href="#" id="tab-adicionar-pesquisa" class="text-sm font-semibold pb-3 tab-inactive flex-shrink-0">ADD. PESQUISA</a>
+                        <a href="#" id="tab-pesquisar" class="text-sm font-semibold pb-3 tab-inactive flex-shrink-0">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
+                        </a>
+                    </div>
+                </nav>
+
+                <!-- 
+                  ====================================================================
+                  ALTERAÇÃO (PADDING): "p-4 sm:p-8" mudou para "px-4 sm:px-8 py-3 sm:py-6"
+                  ==================================================================== 
+                -->
+                <div id="view-inicio" class="px-4 sm:px-8 py-3 sm:py-6 space-y-8">
+                   <section id="inicio-grafico">
+                       <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Progresso</h2>
+                       <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg shadow-inner">
+                           <!-- Progresso dos Livros -->
+                           <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Conclusão total dos livros:</p>
+                           <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4 mb-2 overflow-hidden">
+                               <div id="progress-bar-total" class="bg-blue-600 h-4 rounded-full transition-all duration-500" style="width: 0%;"></div>
+                           </div>
+                           <p id="progress-text-total" class="text-sm font-medium text-gray-700 dark:text-gray-300 text-right">0%</p>
+                           
+                           <!-- Progresso dos Capítulos (NOVO) -->
+                           <p class="text-sm text-gray-600 dark:text-gray-400 mb-2 mt-4">Conclusão total dos capítulos:</p>
+                           <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4 mb-2 overflow-hidden">
+                               <div id="progress-bar-capitulos" class="bg-green-600 h-4 rounded-full transition-all duration-500" style="width: 0%;"></div>
+                           </div>
+                           <p id="progress-text-capitulos" class="text-sm font-medium text-gray-700 dark:text-gray-300 text-right">0%</p>
+                       </div>
+                   </section>
+               
+                   <!-- Seção de Últimas Joias -->
+                   <section id="inicio-joias">
+                       <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Últimas 3 Joias Adicionadas</h2>
+                       <div id="container-ultimas-joias" class="space-y-4">
+                           <p class="text-gray-500 dark:text-gray-400">Carregando...</p>
+                       </div>
+                   </section>
+               
+                   <!-- Seção de Últimas Pesquisas -->
+                   <section id="inicio-pesquisas">
+                       <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Última Pesquisa Adicionada</h2>
+                       <div id="container-ultimas-pesquisas" class="space-y-4">
+                           <p class="text-gray-500 dark:text-gray-400">Carregando...</p>
+                       </div>
+                   </section>
+               </div>
+
+                <!-- Visualização dos Livros (agora 'hidden') -->
+                <main id="view-livros" class="hidden">
+                    <!-- 
+                      ====================================================================
+                      ALTERAÇÃO (PADDING): "p-4 sm:p-8" mudou para "px-4 sm:px-8 py-3 sm:py-6"
+                      ==================================================================== 
+                    -->
+                    <div class="px-4 sm:px-8 py-3 sm:py-6 space-y-8">
+                        <section id="antigo-testamento">
+                            <h2 class="text-sm font-semibold tracking-wider text-gray-600 dark:text-gray-400 mb-4">ESCRITURAS HEBRAICO-ARAMAICAS</h2>
+                            <!-- 
+                              ====================================================================
+                              ALTERAÇÃO (SWIPE): Adicionada classe "no-swipe"
+                              ==================================================================== 
+                            -->
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 no-swipe"></div>
+                        </section>
+                        <section id="novo-testamento">
+                            <h2 class="text-sm font-semibold tracking-wider text-gray-600 dark:text-gray-400 mb-4">ESCRITURAS GREGAS CRISTÃS</h2>
+                            <!-- 
+                              ====================================================================
+                              ALTERAÇÃO (SWIPE): Adicionada classe "no-swipe"
+                              ==================================================================== 
+                            -->
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 no-swipe"></div>
+                        </section>
+                    </div>
+                </main>
+                
+                <!-- 
+                  ====================================================================
+                  ALTERAÇÃO (PADDING): "p-4 sm:p-8" mudou para "px-4 sm:px-8 py-3 sm:py-6"
+                  ==================================================================== 
+                -->
+                <div id="view-adicionar-destaque" class="hidden px-4 sm:px-8 py-3 sm:py-6 flex flex-col items-center">
+                    <div class="w-full max-w-lg">
+                        <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Adicionar Joia</h2>
+                        <form id="form-destaque" class="space-y-4">
+                            <fieldset>
+                                <div>
+                                    <label for="select-livro" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Livro</label>
+                                    <select id="select-livro" name="livro" class="mt-1 block w-full pl-3 pr-10 py-2 text-base bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" required></select>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="select-capitulo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Capítulo</label>
+                                        <select id="select-capitulo" name="capitulo" class="mt-1 block w-full pl-3 pr-10 py-2 text-base bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" required disabled>
+                                            <option value="">Selecione o livro</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="input-versiculo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Versículo(s)</label>
+                                        <input type="text" id="input-versiculo" name="versiculo" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: 5 ou 5,6 ou 5-7" required>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="textarea-destaque" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Joia</label>
+                                    <textarea id="textarea-destaque" name="destaque" rows="4" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Visibilidade</label>
+                                    <input type="hidden" id="input-visibility-destaque" name="visibility" value="public">
+                                    <div id="visibility-selector-destaque" class="flex mt-1 border border-gray-300 dark:border-gray-600 rounded-lg p-1 max-w-xs mx-auto">
+                                        <button type="button" data-value="public" class="visibility-btn-destaque search-type-btn active w-1/2 py-1 rounded-md text-sm">Público</button>
+                                        <button type="button" data-value="private" class="visibility-btn-destaque search-type-btn w-1/2 py-1 rounded-md text-sm">Privado</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button type="submit" class="w-full mt-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">Salvar Joia</button>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 
+                  ====================================================================
+                  ALTERAÇÃO (PADDING): "p-4 sm:p-8" mudou para "px-4 sm:px-8 py-3 sm:py-6"
+                  ==================================================================== 
+                -->
+                <div id="view-pesquisar" class="hidden px-4 sm:px-8 py-3 sm:py-6 flex flex-col items-center">
+                     <div class="w-full max-w-2xl">
+                        <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Pesquisar</h2>
+                        <div id="search-type-selector" class="flex justify-center mb-4 border border-gray-300 dark:border-gray-600 rounded-lg p-1 max-w-xs mx-auto">
+                            <button id="search-type-joias" class="search-type-btn active w-1/2 py-1 rounded-md text-sm">Joias</button>
+                            <button id="search-type-pesquisas" class="search-type-btn w-1/2 py-1 rounded-md text-sm">Pesquisas</button>
+                        </div>
+                        <form id="form-pesquisa" class="flex gap-2 mb-8">
+                            <input type="search" id="input-pesquisa" class="block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Digite uma palavra-chave...">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">Buscar</button>
+                        </form>
+                        <!-- 
+                          ====================================================================
+                          ALTERAÇÃO (SWIPE): Adicionada classe "no-swipe"
+                          ==================================================================== 
+                        -->
+                        <div id="container-resultados" class="space-y-4 no-swipe">
+                            <!-- Resultados da pesquisa aparecerão aqui -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visualização dos Capítulos (Grid de números) -->
+                <div id="view-capitulos" class="hidden">
+                     <!-- 
+                       ====================================================================
+                       ALTERAÇÃO (PADDING): "p-4 sm:p-6" mudou para "px-4 sm:px-6 py-3 sm:py-4"
+                       ==================================================================== 
+                     -->
+                     <header class="px-4 sm:px-6 py-3 sm:py-4 border-b dark:border-gray-700">
+                        <button id="btn-voltar-livros" class="text-blue-600 dark:text-blue-400 hover:underline text-sm mb-6">&larr; Voltar para Livros</button>
+                        <div class="flex items-center justify-between">
+                            <button id="btn-livro-anterior" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                            </button>
+                            <h1 id="titulo-livro-capitulos" class="text-xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100 text-center mx-2"></h1>
+                            <button id="btn-livro-seguinte" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </button>
+                        </div>
+                    </header>
+                    <!-- 
+                      ====================================================================
+                      ALTERAÇÃO (PADDING): "p-4 sm:p-8" mudou para "px-4 sm:px-8 py-3 sm:py-6"
+                      ==================================================================== 
+                    -->
+                    <div class="px-4 sm:px-8 py-3 sm:py-6">
+                        <h3 class="font-semibold text-gray-700 dark:text-gray-300 mb-4">Capítulos</h3>
+                        <!-- 
+                          ====================================================================
+                          ALTERAÇÃO (SWIPE): Adicionada classe "no-swipe"
+                          ==================================================================== 
+                        -->
+                        <div id="grid-capitulos" class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-12 gap-2 no-swipe"></div>
+                    </div>
+                </div>
+
+                <!-- Visualização do Conteúdo do Capítulo (com destaques) -->
+                <div id="view-conteudo" class="hidden">
+                    <!-- 
+                      ====================================================================
+                      ALTERAÇÃO (PADDING): "p-4 sm:p-6" mudou para "px-4 sm:px-6 py-3 sm:py-4"
+                      ==================================================================== 
+                    -->
+                    <header class="px-4 sm:px-6 py-3 sm:py-4 border-b dark:border-gray-700">
+                        <button id="btn-voltar-capitulos" class="text-blue-600 dark:text-blue-400 hover:underline text-sm mb-6">&larr; Voltar para Capítulos</button>
+                        <div class="flex items-center justify-between">
+                            <button id="btn-capitulo-anterior" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                            </button>
+                            <h1 id="titulo-conteudo" class="text-xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100 text-center mx-2"></h1>
+                            <button id="btn-capitulo-seguinte" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </button>
+                        </div>
+                    </header>
+                    <!-- 
+                      ====================================================================
+                      ALTERAÇÃO (PADDING): "p-4 sm:p-8" mudou para "px-4 sm:px-8 py-3 sm:py-6"
+                      ALTERAÇÃO (SWIPE): Adicionada classe "no-swipe"
+                      ==================================================================== 
+                    -->
+                    <div id="destaques-container" class="px-4 sm:px-8 py-3 sm:py-6 space-y-4 no-swipe"></div>
+                </div>
+                
+                <!-- 
+                  ====================================================================
+                  ALTERAÇÃO (PADDING): "p-4 sm:p-8" mudou para "px-4 sm:px-8 py-3 sm:py-6"
+                  ==================================================================== 
+                -->
+                <div id="view-pesquisas" class="hidden px-4 sm:px-8 py-3 sm:py-6">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 text-center">Pesquisas Salvas</h2>
+                    <!-- 
+                      ====================================================================
+                      ALTERAÇÃO (SWIPE): Adicionada classe "no-swipe"
+                      ==================================================================== 
+                    -->
+                    <div id="container-pesquisas" class="space-y-4 max-w-4xl mx-auto no-swipe"></div>
+                </div>
+                
+                <!-- 
+                  ====================================================================
+                  ALTERAÇÃO (PADDING): "p-4 sm:p-8" mudou para "px-4 sm:px-8 py-3 sm:py-6"
+                  ==================================================================== 
+                -->
+                <div id="view-adicionar-pesquisa" class="hidden px-4 sm:px-8 py-3 sm:py-6 flex flex-col items-center">
+                    <div class="w-full max-w-lg">
+                        <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Adicionar Pesquisa</h2>
+                        <form id="form-adicionar-pesquisa" class="space-y-4">
+                            <fieldset>
+                                <div>
+                                    <label for="input-pesquisa-titulo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Título</label>
+                                    <input type="text" id="input-pesquisa-titulo" name="titulo" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                </div>
+                                <div>
+                                    <label for="input-pesquisa-tags" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tags (separadas por vírgula)</label>
+                                    <input type="text" id="input-pesquisa-tags" name="tags" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: estudo, oração">
+                                </div>
+                                 <div>
+                                    <label for="textarea-pesquisa-texto-biblico" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Texto Bíblico (Opcional)</label>
+                                    <textarea id="textarea-pesquisa-texto-biblico" name="textoBiblico" rows="1" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                </div>
+                                <div>
+                                    <label for="textarea-pesquisa-anotacoes" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Anotações</label>
+                                    <textarea id="textarea-pesquisa-anotacoes" name="anotacoes" rows="8" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Visibilidade</label>
+                                    <input type="hidden" id="input-visibility-pesquisa" name="visibility" value="public">
+                                    <div id="visibility-selector-pesquisa" class="flex mt-1 border border-gray-300 dark:border-gray-600 rounded-lg p-1 max-w-xs mx-auto">
+                                        <button type="button" data-value="public" class="visibility-btn-pesquisa search-type-btn active w-1/2 py-1 rounded-md text-sm">Público</button>
+                                        <button type="button" data-value="private" class="visibility-btn-pesquisa search-type-btn w-1/2 py-1 rounded-md text-sm">Privado</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button type="submit" class="w-full mt-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">Salvar Pesquisa</button>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+            <footer class="text-center py-4">
+                <p class="text-sm text-gray-500 dark:text-gray-400">Desenvolvido por Guilherme Almeida</p>
+            </footer>
+        </div>
+
+        <!-- Container para as notificações (Toasts) -->
+        <div id="toast-container" class="fixed top-5 right-5 z-50 space-y-2"></div>
+        
+        <!-- Modal de Senha -->
+        <div id="password-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-40 modal-overlay">
+            <div class="relative top-20 mx-auto p-5 border w-11/12 max-w-md shadow-lg rounded-md bg-white dark:bg-gray-800">
+                <div class="mt-3 text-center">
+                    <h3 id="password-modal-title" class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100"></h3>
+                    <div class="mt-2 px-7 py-3">
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Para continuar, por favor, insira a senha.</p>
+                        <input type="password" id="password-input" placeholder="Senha" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <p id="password-error" class="text-red-500 text-sm mt-2 hidden">Senha incorreta.</p>
+                    </div>
+                    <div class="items-center px-4 py-3">
+                        <button id="cancel-password-btn" class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 mr-2">Cancelar</button>
+                        <button id="confirm-password-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Confirmar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal de Edição -->
+        <div id="edit-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-40 modal-overlay">
+             <div class="relative top-10 mx-auto p-5 border border-gray-200 dark:border-gray-700 w-11/12 max-w-lg shadow-lg rounded-md bg-white dark:bg-gray-800">
+                 <h2 id="edit-modal-title" class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 text-center"></h2>
+                 <form id="form-edit" class="space-y-4">
+                     <!-- Campos do formulário de edição serão preenchidos via JS -->
+                 </form>
+             </div>
+        </div>
+
+        <!-- Modal de Sucesso -->
+        <div id="success-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 text-center max-w-sm mx-auto">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 dark:bg-green-900 mb-4">
+                    <svg class="h-10 w-10 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Sucesso!</h3>
+                <p id="success-modal-message" class="mt-2 text-sm text-gray-600 dark:text-gray-400">Sua joia foi salva com sucesso.</p>
+            </div>
+        </div>
+
+        <!-- Botão de Tema (Sol/Lua) -->
+        <button id="theme-toggle" class="fixed bottom-5 right-5 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full p-3 shadow-lg focus:outline-none">
+            <svg id="theme-toggle-sun" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 5.05A1 1 0 003.636 6.464l.707.707a1 1 0 001.414-1.414l-.707-.707zM3 11a1 1 0 100-2H2a1 1 0 100 2h1zm7.536 2.464a1 1 0 01-1.414 0l-.707-.707a1 1 0 011.414-1.414l.707.707a1 1 0 010 1.414z"></path></svg>
+            <svg id="theme-toggle-moon" class="hidden w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+        </button>
+    </div>
+
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // Importações do Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, where, getDocs, setLogLevel, doc, deleteDoc, getDoc, updateDoc, onSnapshot, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCf6441hETQDUcx0fEHK01-SaTo2kUn0eA",
+            authDomain: "meuep-29295.firebaseapp.com",
+            projectId: "meuep-29295",
+            storageBucket: "meuep-29295.firebasestorage.app",
+            messagingSenderId: "34951069719",
+            appId: "1:34951069719:web:020ee5896ba0c6679b5c52",
+            measurementId: "G-CKTFHX3Q7R"
+        };
+
+        // Inicialização do Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app); // Inicializa a autenticação
+        const appId = firebaseConfig.appId || 'default-app-id';
+        setLogLevel('debug');
+
+        let acaoPendente = { type: null, docId: null, collection: null, path: null };
+        
+        // Caminhos dinâmicos
+        let publicDestaquesCollectionPath = `/artifacts/${appId}/public/data/destaques`;
+        let publicPesquisasCollectionPath = `/artifacts/${appId}/public/data/pesquisas`;
+        let userDestaquesCollectionPath = null;
+        let userPesquisasCollectionPath = null;
+        let currentUserId = null; // ID do usuário logado
+
+        const MENSAGENS_JOIAS = [
+            "Salvo! Você está se tornando um verdadeiro joalheiro.", "Ok, guardado. Mas não pare agora, Continue!", "Salvo! Bela Joia. O que você vai encontrar a seguir?", "Salvo com sucesso! Continue aumentando seu conhecimento.", "Prontinho, está salvo! Mal podemos esperar para ver sua próxima descoberta.", "Adicionado à sua coleção! Continue explorando, sempre há mais para descobrir.", "Salvo! Continue procurando, há verdadeiras joias escondidas nos detalhes.", "Joia Rara! Cuidado pra não ofuscar os outros com suas joias.", "Bling! Mais uma joias brilhando na lista.", "Expandindo o Repertorio! Essa joia foi adicionada.", "Sua coleção de joias esta ficando impressionante! Parabens."
+        ];
+
+        const MENSAGENS_PESQUISAS = [
+            "Pesquisa salva. Continue Pesquisando mais!", "Valeu! Sua pesquisa está segura aqui.", "Ótima pesquisa! Guardamos para você.", "Sua pesquisa foi guardada. Ótimo achado!", "Salvo com sucesso! Continue pesquisando."
+        ];
+
+        const biblia = {
+            "Antigo Testamento": {"Gênesis": 50, "Êxodo": 40, "Levítico": 27, "Números": 36, "Deuteronômio": 34, "Josué": 24, "Juízes": 21, "Rute": 4, "1 Samuel": 31, "2 Samuel": 24, "1 Reis": 22, "2 Reis": 25, "1 Crônicas": 29, "2 Crônicas": 36, "Esdras": 10, "Neemias": 13, "Ester": 10, "Jó": 42, "Salmos": 150, "Provérbios": 31, "Eclesiastes": 12, "Cântico de Salomão": 8, "Isaías": 66, "Jeremias": 52, "Lamentações": 5, "Ezequiel": 48, "Daniel": 12, "Oseias": 14, "Joel": 3, "Amós": 9, "Obadias": 1, "Jonas": 4, "Miqueias": 7, "Naum": 3, "Habacuque": 3, "Sofonias": 3, "Ageu": 2, "Zacarias": 14, "Malaquias": 4},
+            "Novo Testamento": {"Mateus": 28, "Marcos": 16, "Lucas": 24, "João": 21, "Atos": 28, "Romanos": 16, "1 Coríntios": 16, "2 Coríntios": 13, "Gálatas": 6, "Efésios": 6, "Filipenses": 4, "Colossenses": 4, "1 Tessalonicenses": 5, "2 Tessalonicenses": 3, "1 Timóteo": 6, "2 Timóteo": 4, "Tito": 3, "Filemom": 1, "Hebreus": 13, "Tiago": 5, "1 Pedro": 5, "2 Pedro": 3, "1 João": 5, "2 João": 1, "3 João": 1, "Judas": 1, "Apocalipse": 22}
+        };
+        
+        const allBooks = [...Object.keys(biblia["Antigo Testamento"]), ...Object.keys(biblia["Novo Testamento"])];
+        const allChapters = {...biblia["Antigo Testamento"], ...biblia["Novo Testamento"]};
+        let estadoAtual = { livro: null, capitulo: null };
+
+        const views = {
+            inicio: document.getElementById('view-inicio'),
+            livros: document.getElementById('view-livros'),
+            adicionarDestaque: document.getElementById('view-adicionar-destaque'),
+            pesquisar: document.getElementById('view-pesquisar'),
+            pesquisas: document.getElementById('view-pesquisas'),
+            adicionarPesquisa: document.getElementById('view-adicionar-pesquisa'),
+            capitulos: document.getElementById('view-capitulos'),
+            conteudo: document.getElementById('view-conteudo'),
+        };
+        const tabs = {
+            inicio: document.getElementById('tab-inicio'),
+            livros: document.getElementById('tab-livros'),
+            adicionarDestaque: document.getElementById('tab-adicionar-destaque'),
+            pesquisar: document.getElementById('tab-pesquisar'),
+            pesquisas: document.getElementById('tab-pesquisas'),
+            adicionarPesquisa: document.getElementById('tab-adicionar-pesquisa'),
+        };
+        const formDestaque = document.getElementById('form-destaque');
+        const formPesquisa = document.getElementById('form-pesquisa');
+        const formAdicionarPesquisa = document.getElementById('form-adicionar-pesquisa');
+        const selectLivro = document.getElementById('select-livro');
+        const selectCapitulo = document.getElementById('select-capitulo');
+        const passwordModal = document.getElementById('password-modal');
+        const editModal = document.getElementById('edit-modal');
+        const passwordError = document.getElementById('password-error');
+        
+        // --- LÓGICA DE LOGIN/AUTENTICAÇÃO ---
+        const loginScreen = document.getElementById('login-screen');
+        const appContent = document.getElementById('app-content');
+        const loginForm = document.getElementById('login-form');
+        const emailInput = document.getElementById('login-email');
+        const passwordInput = document.getElementById('login-password');
+        const loginError = document.getElementById('login-error');
+        
+        // --- LÓGICA DO TEMA ---
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const sunIcon = document.getElementById('theme-toggle-sun');
+        const moonIcon = document.getElementById('theme-toggle-moon');
+
+        function setTema(isDark) {
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            } else {
+                document.documentElement.classList.remove('dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            }
+        }
+
+        const temaSalvo = localStorage.getItem('theme');
+        const prefereEscuro = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const ehEscuro = temaSalvo === 'dark' || (temaSalvo === null && prefereEscuro);
+        setTema(ehEscuro);
+
+        themeToggleBtn.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.contains('dark');
+            setTema(!isDark);
+        });
+        // --- FIM DA LÓGICA DO TEMA ---
+
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                userDestaquesCollectionPath = `/artifacts/${appId}/users/${currentUserId}/destaques`;
+                userPesquisasCollectionPath = `/artifacts/${appId}/users/${currentUserId}/pesquisas`;
+
+                loginScreen.classList.add('opacity-0');
+                loginScreen.addEventListener('transitionend', () => {
+                    loginScreen.style.display = 'none';
+                }, { once: true });
+                
+                appContent.classList.remove('hidden');
+                
+                const displayName = getDisplayNameFromEmail(user.email);
+                const initials = displayName.charAt(0).toUpperCase();
+                document.getElementById('profile-initials').textContent = initials;
+                document.getElementById('profile-menu-name').textContent = displayName;
+                document.getElementById('profile-menu-email').textContent = user.email;
+
+                initializeMainApp(user);
+            } else {
+                currentUserId = null;
+                userDestaquesCollectionPath = null;
+                userPesquisasCollectionPath = null;
+                
+                loginScreen.style.display = 'flex';
+                setTimeout(() => loginScreen.classList.remove('opacity-0'), 10);
+                
+                appContent.classList.add('hidden');
+            }
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            loginError.textContent = '';
+            loginForm.classList.remove('shake');
+            const email = emailInput.value;
+            const password = passwordInput.value;
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Login bem-sucedido
+                })
+                .catch((error) => {
+                    console.error("Erro de login:", error.code, error.message);
+                    loginForm.classList.add('shake');
+                    if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+                        loginError.textContent = 'E-mail ou senha incorretos.';
+                    } else {
+                        loginError.textContent = 'Erro ao tentar fazer login.';
+                    }
+                    passwordInput.value = '';
+                    setTimeout(() => {
+                        loginForm.classList.remove('shake');
+                    }, 500);
+                });
+        });
+
+        const backgroundTextContainer = loginScreen.querySelector('.absolute.inset-0');
+        const bookNames = ["Gênesis", "Salmos", "Isaías", "Mateus", "Atos", "Apocalipse", "Provérbios", "João", "Romanos", "Hebreus", "Êxodo", "Deuteronômio", "1 Coríntios"];
+        for (let i = 0; i < 15; i++) {
+            const titleEl = document.createElement('span');
+            titleEl.className = 'book-title';
+            titleEl.textContent = bookNames[Math.floor(Math.random() * bookNames.length)];
+            titleEl.style.top = `${Math.random() * 100}vh`;
+            titleEl.style.animationDuration = `${20 + Math.random() * 20}s`;
+            titleEl.style.animationDelay = `${Math.random() * -40}s`;
+            titleEl.style.fontSize = `${1.5 + Math.random() * 2}rem`;
+            backgroundTextContainer.appendChild(titleEl);
+        }
+        // --- FIM DA LÓGICA DE LOGIN ---
+
+        function capitalizeFirstLetter(string) {
+            if (!string) return string;
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        function getDisplayNameFromEmail(email) {
+            if (!email) return 'Anônimo';
+            const namePart = email.split('@')[0];
+            const cleanedName = namePart.replace(/[\._0-9]/g, ' '); 
+            return capitalizeFirstLetter(cleanedName.split(' ')[0]);
+        }
+
+
+        function showToast(message, isSuccess = true) {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgColor = isSuccess ? 'bg-green-500' : 'bg-red-500';
+            toast.className = `toast text-white p-4 rounded-md shadow-lg flex items-center justify-between ${bgColor}`;
+            
+            const messageSpan = document.createElement('span');
+            messageSpan.textContent = message;
+            toast.appendChild(messageSpan);
+
+            toastContainer.appendChild(toast);
+            setTimeout(() => { toast.classList.add('show'); }, 10);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.addEventListener('transitionend', () => toast.remove());
+            }, 3000);
+        }
+
+        function showSuccessModal(type) {
+            const modal = document.getElementById('success-modal');
+            const messageP = document.getElementById('success-modal-message');
+            
+            const messages = type === 'joia' ? MENSAGENS_JOIAS : MENSAGENS_PESQUISAS;
+            const randomIndex = Math.floor(Math.random() * messages.length);
+            messageP.textContent = messages[randomIndex];
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.add('show');
+            }, 10);
+
+            setTimeout(() => {
+                modal.classList.remove('show');
+                modal.addEventListener('transitionend', () => {
+                    modal.classList.add('hidden');
+                }, { once: true });
+            }, 3000);
+        }
+
+        function copiarTexto(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Texto copiado!");
+            } catch (err) {
+                console.error('Falha ao copiar', err);
+                showToast("Falha ao copiar.", false);
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function removerAcentos(texto) {
+            if (!texto) return '';
+            return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        }
+
+        function esconderTudo() { Object.values(views).forEach(view => view.classList.add('hidden')); }
+
+        function popularSelectLivros() {
+            selectLivro.innerHTML = '<option value="" disabled selected>Selecione um livro</option>';
+            const todosLivros = {...biblia["Antigo Testamento"], ...biblia["Novo Testamento"]};
+            Object.keys(todosLivros).forEach(livro => {
+                const option = document.createElement('option');
+                option.value = livro;
+                option.textContent = livro;
+                selectLivro.appendChild(option);
+            });
+        }
+
+        async function salvarDestaque(event) {
+            event.preventDefault();
+            if (!auth.currentUser) {
+                showToast("Você precisa estar logado para salvar.", false);
+                return;
+            }
+
+            const submitButton = formDestaque.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Salvando...';
+
+            try {
+                const formData = new FormData(formDestaque);
+                const visibility = formData.get('visibility');
+                const destaqueData = {
+                    autorEmail: auth.currentUser.email,
+                    autorId: auth.currentUser.uid,
+                    livro: formData.get('livro'),
+                    capitulo: parseInt(formData.get('capitulo'), 10),
+                    versiculo: formData.get('versiculo'),
+                    texto: formData.get('destaque'),
+                    visibility: visibility,
+                    createdAt: new Date()
+                };
+
+                const collectionPath = visibility === 'private' ? userDestaquesCollectionPath : publicDestaquesCollectionPath;
+                await addDoc(collection(db, collectionPath), destaqueData);
+                
+                showSuccessModal('joia');
+                formDestaque.reset();
+                document.getElementById('input-visibility-destaque').value = 'public';
+                document.querySelector('.visibility-btn-destaque[data-value="public"]').classList.add('active');
+                document.querySelector('.visibility-btn-destaque[data-value="private"]').classList.remove('active');
+                
+                selectCapitulo.disabled = true;
+                selectCapitulo.innerHTML = '<option value="">Selecione o livro</option>';
+                popularLivros();
+                
+                if (!views.inicio.classList.contains('hidden')) {
+                    popularInicio();
+                }
+
+            } catch (e) {
+                console.error("Erro ao adicionar documento: ", e);
+                showToast("Falha ao salvar a joia.", false);
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Salvar Joia';
+            }
+        }
+
+        async function salvarPesquisa(event) {
+            event.preventDefault();
+             if (!auth.currentUser) {
+                showToast("Você precisa estar logado para salvar.", false);
+                return;
+            }
+
+            const submitButton = formAdicionarPesquisa.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Salvando...';
+
+            try {
+                const formData = new FormData(formAdicionarPesquisa);
+                const visibility = formData.get('visibility');
+                const pesquisaData = {
+                    autorEmail: auth.currentUser.email,
+                    autorId: auth.currentUser.uid,
+                    titulo: formData.get('titulo'),
+                    tags: formData.get('tags').split(',').map(tag => tag.trim()).filter(tag => tag),
+                    textoBiblico: formData.get('textoBiblico'),
+                    anotacoes: formData.get('anotacoes'),
+                    visibility: visibility,
+                    createdAt: new Date()
+                };
+
+                const collectionPath = visibility === 'private' ? userPesquisasCollectionPath : publicPesquisasCollectionPath;
+                await addDoc(collection(db, collectionPath), pesquisaData);
+
+                showSuccessModal('pesquisa');
+                formAdicionarPesquisa.reset();
+                document.getElementById('input-visibility-pesquisa').value = 'public';
+                document.querySelector('.visibility-btn-pesquisa[data-value="public"]').classList.add('active');
+                document.querySelector('.visibility-btn-pesquisa[data-value="private"]').classList.remove('active');
+                
+                if (!views.inicio.classList.contains('hidden')) {
+                    popularInicio();
+                }
+
+            } catch (e) {
+                console.error("Erro ao salvar pesquisa: ", e);
+                showToast("Falha ao salvar a pesquisa.", false);
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Salvar Pesquisa';
+            }
+        }
+
+        async function fetchDocs(publicPath, userPath, queryConstraints = []) {
+            let items = [];
+            const itemIds = new Set();
+
+            try {
+                const publicQuery = query(collection(db, publicPath), ...queryConstraints);
+                const publicSnapshot = await getDocs(publicQuery);
+                publicSnapshot.forEach(doc => {
+                    const data = { id: doc.id, ...doc.data(), path: publicPath };
+                    items.push(data);
+                    itemIds.add(doc.id);
+                });
+            } catch (e) {
+                console.error(`Erro ao buscar em ${publicPath}: `, e);
+            }
+
+            if (userPath && currentUserId) {
+                 try {
+                    const privateQuery = query(collection(db, userPath), ...queryConstraints);
+                    const privateSnapshot = await getDocs(privateQuery);
+                    privateSnapshot.forEach(doc => {
+                        if (!itemIds.has(doc.id)) {
+                            const data = { id: doc.id, ...doc.data(), path: userPath };
+                            items.push(data);
+                            itemIds.add(doc.id);
+                        }
+                    });
+                } catch (e) {
+                    console.error(`Erro ao buscar em ${userPath}: `, e);
+                }
+            }
+            
+            const hasOrderBy = queryConstraints.some(c => typeof c === 'object' && c.type === 'orderBy');
+            if (!hasOrderBy) {
+                 items.sort((a, b) => {
+                    const dateA = a.createdAt && a.createdAt.toDate ? a.createdAt.toDate() : new Date(0);
+                    const dateB = b.createdAt && b.createdAt.toDate ? b.createdAt.toDate() : new Date(0);
+                    return dateB - dateA;
+                });
+            }
+
+            return items;
+        }
+
+
+        async function popularLivros() {
+            if (!currentUserId) return; 
+
+            const containerAntigo = document.querySelector('#antigo-testamento .grid');
+            const containerNovo = document.querySelector('#novo-testamento .grid');
+            containerAntigo.innerHTML = '<p class="text-gray-500 dark:text-gray-400 col-span-full">Carregando livros...</p>';
+            containerNovo.innerHTML = '';
+
+            const progressData = {};
+            try {
+                const allDestaques = await fetchDocs(publicDestaquesCollectionPath, userDestaquesCollectionPath);
+                
+                allDestaques.forEach((data) => {
+                    if (data.livro && data.capitulo) {
+                        if (!progressData[data.livro]) {
+                            progressData[data.livro] = new Set();
+                        }
+                        progressData[data.livro].add(data.capitulo);
+                    }
+                });
+            } catch(e) {
+                console.error("Erro ao buscar destaques dos livros: ", e);
+                showToast("Não foi possível carregar o progresso dos livros.", false);
+            }
+
+            containerAntigo.innerHTML = '';
+            containerNovo.innerHTML = '';
+
+            const criarBotaoLivro = (nome, totalCaps, completedChaptersSet) => {
+                const completedCount = completedChaptersSet ? completedChaptersSet.size : 0;
+                const percentage = totalCaps > 0 ? (completedCount / totalCaps) * 100 : 0;
+                const isCompleted = completedCount === totalCaps;
+                const hasProgress = completedCount > 0;
+
+                const div = document.createElement('div');
+                
+                let baseClasses = 'font-medium p-4 text-center cursor-pointer transition-colors duration-200 relative overflow-hidden';
+                let colorClasses = '';
+                let progressBgColor = 'bg-blue-500';
+
+                if (isCompleted) {
+                    colorClasses = ' bg-custom-blue text-white'; 
+                    progressBgColor = 'bg-green-500';
+                } else if (hasProgress) {
+                    colorClasses = ' bg-custom-blue text-white';
+                } else {
+                    colorClasses = ' bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600';
+                }
+
+                div.className = baseClasses + colorClasses;
+                div.onclick = () => mostrarCapitulos(nome, totalCaps);
+
+                div.innerHTML = `
+                    ${nome}
+                    <div class="absolute bottom-0 left-0 w-full bg-gray-200 dark:bg-gray-600/50 h-1">
+                        <div class="${progressBgColor} h-1" style="width: ${percentage}%"></div>
+                    </div>
+                `;
+
+                return div;
+            };
+
+            Object.entries(biblia["Antigo Testamento"]).forEach(([livro, caps]) => {
+                const completedChapters = progressData[livro] || new Set();
+                containerAntigo.appendChild(criarBotaoLivro(livro, caps, completedChapters));
+            });
+            Object.entries(biblia["Novo Testamento"]).forEach(([livro, caps]) => {
+                const completedChapters = progressData[livro] || new Set();
+                containerNovo.appendChild(criarBotaoLivro(livro, caps, completedChapters));
+            });
+        }
+
+        async function mostrarCapitulos(nomeLivro, numCapitulos) {
+            estadoAtual.livro = nomeLivro;
+            esconderTudo();
+            views.capitulos.classList.remove('hidden');
+            window.scrollTo(0, 0);
+            document.getElementById('titulo-livro-capitulos').textContent = `O Livro de ${nomeLivro}`;
+            
+            const btnAnterior = document.getElementById('btn-livro-anterior');
+            const btnSeguinte = document.getElementById('btn-livro-seguinte');
+            const currentIndex = allBooks.indexOf(nomeLivro);
+
+            if (currentIndex > 0) {
+                const livroAnterior = allBooks[currentIndex - 1];
+                const capsAnterior = allChapters[livroAnterior];
+                btnAnterior.onclick = () => mostrarCapitulos(livroAnterior, capsAnterior);
+                btnAnterior.disabled = false;
+                btnAnterior.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                btnAnterior.onclick = null;
+                btnAnterior.disabled = true;
+                btnAnterior.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+
+            if (currentIndex < allBooks.length - 1) {
+                const livroSeguinte = allBooks[currentIndex + 1];
+                const capsSeguinte = allChapters[livroSeguinte];
+                btnSeguinte.onclick = () => mostrarCapitulos(livroSeguinte, capsSeguinte);
+                btnSeguinte.disabled = false;
+                btnSeguinte.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                btnSeguinte.onclick = null;
+                btnSeguinte.disabled = true;
+                btnSeguinte.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+
+            const grid = document.getElementById('grid-capitulos');
+            grid.innerHTML = '<p class="text-gray-500 dark:text-gray-400 col-span-full">Verificando destaques...</p>';
+
+            const capitulosComDestaque = new Set();
+            try {
+                const constraints = [where("livro", "==", nomeLivro)];
+                const destaques = await fetchDocs(publicDestaquesCollectionPath, userDestaquesCollectionPath, constraints);
+                destaques.forEach((data) => {
+                    capitulosComDestaque.add(data.capitulo);
+                });
+            } catch (e) {
+                console.error("Erro ao verificar destaques: ", e);
+                showToast("Erro ao verificar destaques.", false);
+            }
+
+            grid.innerHTML = '';
+
+            for (let i = 1; i <= numCapitulos; i++) {
+                const capButton = document.createElement('button');
+                capButton.textContent = i;
+                let classes = 'border rounded-sm p-2 text-center focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200';
+                
+                if (capitulosComDestaque.has(i)) {
+                    classes += ' has-highlight';
+                } else {
+                    classes += ' border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700';
+                }
+                
+                capButton.className = classes;
+                capButton.onclick = () => mostrarConteudo(nomeLivro, i);
+                grid.appendChild(capButton);
+            }
+        }
+        
+        async function deletarItem(docId, collectionPath) {
+            if (!docId || !collectionPath) {
+                showToast("Erro ao deletar: ID ou caminho do documento ausente.", false);
+                return;
+            }
+            try {
+                await deleteDoc(doc(db, collectionPath, docId));
+                showToast("Item removido.");
+                
+                if (collectionPath.includes('destaques')) {
+                    if (document.getElementById('view-conteudo').classList.contains('hidden')) {
+                        document.getElementById('form-pesquisa').requestSubmit();
+                    } else {
+                        await mostrarConteudo(estadoAtual.livro, estadoAtual.capitulo);
+                    }
+                    popularLivros();
+                } else if (collectionPath.includes('pesquisas')) {
+                    mostrarPesquisas();
+                }
+
+                if (!views.inicio.classList.contains('hidden')) {
+                    popularInicio();
+                }
+
+            } catch (error) {
+                console.error("Erro ao deletar item: ", error);
+                showToast("Falha ao remover o item.", false);
+            }
+        }
+
+        function criarCardDestaque(destaque) {
+            const { id, versiculo, texto, autorEmail, autorId, livro, capitulo, visibility, path } = destaque;
+            const autorNome = getDisplayNameFromEmail(autorEmail);
+            const isOwner = autorId === currentUserId;
+
+            const card = document.createElement('div');
+            card.className = 'relative border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-700/50';
+            
+            const isSearchView = !document.getElementById('view-pesquisar').classList.contains('hidden');
+            const isInicioView = !document.getElementById('view-inicio').classList.contains('hidden');
+            
+            const referencia = (isSearchView || isInicioView) ? `<p class="font-semibold text-gray-600 dark:text-gray-300 text-sm mb-2">${livro} ${capitulo}</p>` : ``;
+
+            const textoId = `texto-${id}`;
+            const toggleBtnId = `toggle-btn-texto-${id}`;
+            let textoHTML = '';
+            const MAX_LENGTH = 250; 
+
+            if (texto && texto.length > MAX_LENGTH) {
+                const textoTruncado = texto.substring(0, MAX_LENGTH) + '...';
+                textoHTML = `
+                    <div>
+                        <p id="${textoId}" class="mt-2 text-gray-700 dark:text-gray-300 whitespace-pre-wrap">${textoTruncado}</p>
+                        <button id="${toggleBtnId}" class="text-blue-600 dark:text-blue-400 hover:underline text-sm mt-2">Mostrar tudo</button>
+                    </div>
+                `;
+            } else {
+                textoHTML = `<p class="mt-2 text-gray-700 dark:text-gray-300 whitespace-pre-wrap">${texto || ''}</p>`;
+            }
+
+            let visibilityIconHTML = '';
+            if (visibility === 'private') {
+                visibilityIconHTML = `
+                    <span class="text-xs font-semibold text-red-500 dark:text-red-400 ml-2" title="Privado (só você pode ver)">
+                        (PRIVADO)
+                    </span>`;
+            } else {
+                visibilityIconHTML = `
+                    <span class="text-xs font-semibold text-green-500 dark:text-green-400 ml-2" title="Público (todos podem ver)">
+                        (PUBLICO)
+                    </span>`;
+            }
+            
+            let actionButtonsHTML = `
+                <button class="copy-btn text-gray-400 hover:text-green-500 p-1" title="Copiar">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg>
+                </button>
+            `;
+            if (isOwner) {
+                actionButtonsHTML += `
+                    <button class="edit-btn text-gray-400 hover:text-blue-500 p-1" title="Editar">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg>
+                    </button>
+                    <button class="delete-btn text-gray-400 hover:text-red-500 p-1" title="Excluir">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd"></path></svg>
+                    </button>
+                `;
+            }
+
+            card.innerHTML = `
+                <div class="flex justify-between items-start mb-2">
+                    <p class="font-bold text-blue-600 dark:text-blue-400">Versículo(s) ${versiculo}</p>
+                    <div class="flex">
+                         ${actionButtonsHTML}
+                    </div>
+                </div>
+                <div>
+                    ${referencia}
+                    ${textoHTML}
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-3 italic">Destaque de: ${autorNome} ${visibilityIconHTML}</p>
+                </div>
+            `;
+
+            if (texto && texto.length > MAX_LENGTH) {
+                const toggleBtn = card.querySelector(`#${toggleBtnId}`);
+                const textoP = card.querySelector(`#${textoId}`);
+                let isTruncated = true;
+
+                toggleBtn.addEventListener('click', () => {
+                    isTruncated = !isTruncated;
+                    if (isTruncated) {
+                        textoP.textContent = texto.substring(0, MAX_LENGTH) + '...';
+                        toggleBtn.textContent = 'Mostrar tudo';
+                    } else {
+                        textoP.textContent = texto;
+                        toggleBtn.textContent = 'Mostrar menos';
+                    }
+                });
+            }
+            
+            card.querySelector('.copy-btn').addEventListener('click', () => {
+                const textoParaCopiar = `${destaque.livro} ${destaque.capitulo}:${destaque.versiculo}\n\n${destaque.texto}`;
+                copiarTexto(textoParaCopiar);
+            });
+            if(isOwner) {
+                card.querySelector('.edit-btn').addEventListener('click', () => iniciarAcao('edit', id, path));
+                card.querySelector('.delete-btn').addEventListener('click', () => iniciarAcao('delete', id, path));
+            }
+
+            return card;
+        }
+
+        function criarCardPesquisa(pesquisa) {
+            const { id, titulo, tags, textoBiblico, anotacoes, autorEmail, autorId, visibility, path } = pesquisa;
+            const autorNome = getDisplayNameFromEmail(autorEmail);
+            const isOwner = autorId === currentUserId;
+
+            const card = document.createElement('div');
+            card.className = 'relative border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800 shadow-sm';
+
+            const tagsHTML = tags && tags.length > 0
+                ? `<div class="flex flex-wrap gap-2 mb-3">${tags.map(tag => `<span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-medium px-2.5 py-0.5 rounded-full">${tag}</span>`).join('')}</div>`
+                : '';
+
+            const textoBiblicoHTML = textoBiblico
+                ? `<blockquote class="border-l-4 border-gray-300 dark:border-gray-600 pl-4 py-2 my-4 bg-gray-50 dark:bg-gray-700/50 rounded-r-lg"><p class="italic text-gray-700 dark:text-gray-300 whitespace-pre-wrap">${textoBiblico}</p></blockquote>`
+                : '';
+            
+            const anotacoesId = `anotacoes-${id}`;
+            const toggleBtnId = `toggle-btn-${id}`;
+            let anotacoesHTML = '';
+            const MAX_LENGTH = 250; 
+
+            if (anotacoes && anotacoes.length > MAX_LENGTH) {
+                const textoTruncado = anotacoes.substring(0, MAX_LENGTH) + '...';
+                anotacoesHTML = `
+                    <div>
+                        <p id="${anotacoesId}" class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">${textoTruncado}</p>
+                        <button id="${toggleBtnId}" class="text-blue-600 dark:text-blue-400 hover:underline text-sm mt-2">Mostrar tudo</button>
+                    </div>
+                `;
+            } else {
+                anotacoesHTML = `<p class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">${anotacoes || ''}</p>`;
+            }
+
+            let visibilityIconHTML = '';
+            if (visibility === 'private') {
+                visibilityIconHTML = `
+                    <span class="text-xs font-semibold text-red-500 dark:text-red-400 ml-2" title="Privado (só você pode ver)">
+                        (PRIVADO)
+                    </span>`;
+            } else {
+                visibilityIconHTML = `
+                    <span class="text-xs font-semibold text-green-500 dark:text-green-400 ml-2" title="Público (todos podem ver)">
+                        (PUBLICO)
+                    </span>`;
+            }
+
+            let actionButtonsHTML = `
+                <button class="copy-btn text-gray-400 hover:text-green-500 p-1" title="Copiar">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg>
+                </button>
+            `;
+            if (isOwner) {
+                actionButtonsHTML += `
+                    <button class="edit-btn text-gray-400 hover:text-blue-500 p-1" title="Editar">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg>
+                    </button>
+                    <button class="delete-btn text-gray-400 hover:text-red-500 p-1" title="Excluir">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd"></path></svg>
+                    </button>
+                `;
+            }
+
+
+            card.innerHTML = `
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100">${titulo}</h3>
+                    <div class="flex">
+                        ${actionButtonsHTML}
+                    </div>
+                </div>
+                ${tagsHTML}
+                ${textoBiblicoHTML}
+                ${anotacoesHTML}
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-4 italic">Pesquisa de: ${autorNome} ${visibilityIconHTML}</p>
+            `;
+
+            if (anotacoes && anotacoes.length > MAX_LENGTH) {
+                const toggleBtn = card.querySelector(`#${toggleBtnId}`);
+                const anotacoesP = card.querySelector(`#${anotacoesId}`);
+                let isTruncated = true;
+
+                toggleBtn.addEventListener('click', () => {
+                    isTruncated = !isTruncated;
+                    if (isTruncated) {
+                        anotacoesP.textContent = anotacoes.substring(0, MAX_LENGTH) + '...';
+                        toggleBtn.textContent = 'Mostrar tudo';
+                    } else {
+                        anotacoesP.textContent = anotacoes;
+                        toggleBtn.textContent = 'Mostrar menos';
+                    }
+                });
+            }
+            
+            card.querySelector('.copy-btn').addEventListener('click', () => {
+                let textoParaCopiar = `${pesquisa.titulo}\n\n`;
+                if (pesquisa.textoBiblico) {
+                    textoParaCopiar += `Texto Bíblico:\n${pesquisa.textoBiblico}\n\n`;
+                }
+                textoParaCopiar += `Anotações:\n${pesquisa.anotacoes}`;
+                copiarTexto(textoParaCopiar);
+            });
+            if(isOwner) {
+                card.querySelector('.edit-btn').addEventListener('click', () => iniciarAcao('edit', id, path));
+                card.querySelector('.delete-btn').addEventListener('click', () => iniciarAcao('delete', id, path));
+            }
+
+            return card;
+        }
+
+        async function mostrarConteudo(nomeLivro, numCapitulo) {
+            estadoAtual.livro = nomeLivro;
+            estadoAtual.capitulo = numCapitulo;
+            esconderTudo();
+            views.conteudo.classList.remove('hidden');
+            window.scrollTo(0, 0);
+            document.getElementById('titulo-conteudo').textContent = `${nomeLivro} ${numCapitulo}`;
+            
+            const btnAnterior = document.getElementById('btn-capitulo-anterior');
+            const btnSeguinte = document.getElementById('btn-capitulo-seguinte');
+            const totalCapitulos = allChapters[nomeLivro];
+
+            if (numCapitulo > 1) {
+                btnAnterior.onclick = () => mostrarConteudo(nomeLivro, numCapitulo - 1);
+                btnAnterior.disabled = false;
+                btnAnterior.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                btnAnterior.onclick = null;
+                btnAnterior.disabled = true;
+                btnAnterior.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+
+            if (numCapitulo < totalCapitulos) {
+                btnSeguinte.onclick = () => mostrarConteudo(nomeLivro, numCapitulo + 1);
+                btnSeguinte.disabled = false;
+                btnSeguinte.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                btnSeguinte.onclick = null;
+                btnSeguinte.disabled = true;
+                btnSeguinte.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+
+            const container = document.getElementById('destaques-container');
+            container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Carregando destaques...</p>';
+
+            try {
+                const constraints = [
+                    where("livro", "==", nomeLivro), 
+                    where("capitulo", "==", numCapitulo)
+                ];
+                const destaquesDoCapitulo = await fetchDocs(publicDestaquesCollectionPath, userDestaquesCollectionPath, constraints);
+
+                destaquesDoCapitulo.sort((a, b) => {
+                    const firstNumA = parseInt(String(a.versiculo).split(/[,-]/)[0], 10);
+                    const firstNumB = parseInt(String(b.versiculo).split(/[,-]/)[0], 10);
+                    return firstNumA - firstNumB;
+                });
+
+                container.innerHTML = '';
+                if (destaquesDoCapitulo.length > 0) {
+                    destaquesDoCapitulo.forEach(destaque => {
+                        const card = criarCardDestaque(destaque);
+                        container.appendChild(card);
+                    });
+                } else {
+                    container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Nenhum destaque salvo para este capítulo.</p>';
+                }
+            } catch(e) {
+                console.error("Erro ao buscar destaques: ", e);
+                container.innerHTML = '<p class="text-red-500">Ocorreu um erro ao carregar os destaques.</p>';
+            }
+        }
+        
+        async function realizarPesquisa(event) {
+            event.preventDefault();
+            const termo = removerAcentos(document.getElementById('input-pesquisa').value.toLowerCase());
+            const container = document.getElementById('container-resultados');
+            const searchTypeJoias = document.getElementById('search-type-joias');
+            const isPesquisas = !searchTypeJoias.classList.contains('active');
+
+            container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Pesquisando...</p>';
+
+            if (!termo) {
+                container.innerHTML = '';
+                return;
+            }
+
+            try {
+                const collectionPathPublic = isPesquisas ? publicPesquisasCollectionPath : publicDestaquesCollectionPath;
+                const collectionPathUser = isPesquisas ? userPesquisasCollectionPath : userDestaquesCollectionPath;
+
+                const todosItens = await fetchDocs(collectionPathPublic, collectionPathUser);
+
+                const resultados = todosItens.filter(item => {
+                    if(isPesquisas) {
+                        const titulo = removerAcentos(item.titulo ? item.titulo.toLowerCase() : '');
+                        const anotacoes = removerAcentos(item.anotacoes ? item.anotacoes.toLowerCase() : '');
+                        const tags = removerAcentos(item.tags ? item.tags.join(' ').toLowerCase() : '');
+                        return titulo.includes(termo) || anotacoes.includes(termo) || tags.includes(termo);
+                    } else {
+                        const texto = removerAcentos(item.texto ? item.texto.toLowerCase() : '');
+                        const autorNome = removerAcentos(getDisplayNameFromEmail(item.autorEmail).toLowerCase());
+                        return texto.includes(termo) || autorNome.includes(termo);
+                    }
+                });
+
+                container.innerHTML = '';
+                if (resultados.length > 0) {
+                    resultados.forEach(item => {
+                        const card = isPesquisas ? criarCardPesquisa(item) : criarCardDestaque(item);
+                        container.appendChild(card);
+                    });
+                } else {
+                    container.innerHTML = `<p class="text-gray-500 dark:text-gray-400">Nenhum resultado encontrado para "${document.getElementById('input-pesquisa').value}".</p>`;
+                }
+
+            } catch(e) {
+                console.error("Erro ao pesquisar: ", e);
+                container.innerHTML = `<p class="text-red-500">Ocorreu um erro ao realizar a pesquisa.</p>`;
+            }
+        }
+
+        async function buscarUltimasJoias() {
+            const container = document.getElementById('container-ultimas-joias');
+            container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Carregando joias...</p>';
+            try {
+                const constraints = [
+                    orderBy("createdAt", "desc"),
+                    limit(3) // 3 joias
+                ];
+                const joias = await fetchDocs(publicDestaquesCollectionPath, userDestaquesCollectionPath, constraints);
+
+                container.innerHTML = '';
+                if (joias.length > 0) {
+                    joias.forEach(joia => {
+                        const card = criarCardDestaque(joia);
+                        container.appendChild(card);
+                    });
+                } else {
+                    container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Nenhuma joia adicionada ainda.</p>';
+                }
+            } catch (e) {
+                console.error("Erro ao buscar últimas joias:", e);
+                container.innerHTML = '<p class="text-red-500">Erro ao carregar joias.</p>';
+            }
+        }
+
+        async function buscarUltimasPesquisas() {
+            const container = document.getElementById('container-ultimas-pesquisas');
+            container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Carregando pesquisas...</p>';
+            try {
+                const constraints = [
+                    orderBy("createdAt", "desc"),
+                    limit(1) // 1 pesquisa
+                ];
+                const pesquisas = await fetchDocs(publicPesquisasCollectionPath, userPesquisasCollectionPath, constraints);
+
+                container.innerHTML = '';
+                if (pesquisas.length > 0) {
+                    pesquisas.forEach(pesquisa => {
+                        const card = criarCardPesquisa(pesquisa);
+                        container.appendChild(card);
+                    });
+                } else {
+                    container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Nenhuma pesquisa adicionada ainda.</p>';
+                }
+            } catch (e) {
+                console.error("Erro ao buscar últimas pesquisas:", e);
+                container.innerHTML = '<p class="text-red-500">Erro ao carregar pesquisas.</p>';
+            }
+        }
+
+        async function calcularProgressoTotal() {
+            const progressBarTotal = document.getElementById('progress-bar-total');
+            const progressTextTotal = document.getElementById('progress-text-total');
+            const progressBarCapitulos = document.getElementById('progress-bar-capitulos');
+            const progressTextCapitulos = document.getElementById('progress-text-capitulos');
+            
+            if (!progressBarTotal || !progressTextTotal || !progressBarCapitulos || !progressTextCapitulos) return;
+
+            progressBarTotal.style.width = '0%';
+            progressTextTotal.textContent = 'Calculando...';
+            progressBarCapitulos.style.width = '0%';
+            progressTextCapitulos.textContent = 'Calculando...';
+
+            try {
+                const allDestaques = await fetchDocs(publicDestaquesCollectionPath, userDestaquesCollectionPath);
+                
+                const progressData = {};
+                allDestaques.forEach((data) => {
+                     if (data.livro && data.capitulo) {
+                        if (!progressData[data.livro]) {
+                            progressData[data.livro] = new Set();
+                        }
+                        progressData[data.livro].add(data.capitulo);
+                    }
+                });
+
+                let totalLivros = 0;
+                let livrosCompletos = 0;
+                
+                Object.values(biblia).forEach(testamento => {
+                    Object.entries(testamento).forEach(([livro, totalCaps]) => {
+                        totalLivros++;
+                        const capitulosFeitos = progressData[livro] ? progressData[livro].size : 0;
+                        if (capitulosFeitos === totalCaps) {
+                            livrosCompletos++;
+                        }
+                    });
+                });
+
+                // Cálculo de Livros
+                const percentageLivros = totalLivros > 0 ? (livrosCompletos / totalLivros) * 100 : 0;
+                progressBarTotal.style.width = `${percentageLivros}%`;
+                progressTextTotal.textContent = `${percentageLivros.toFixed(1)}% (${livrosCompletos} de ${totalLivros} livros)`;
+
+                // Cálculo de Capítulos
+                const totalCapitulosGlobal = Object.values(allChapters).reduce((acc, val) => acc + val, 0);
+                const capitulosConcluidosGlobal = Object.values(progressData).reduce((acc, capSet) => acc + capSet.size, 0);
+                const percentageCapitulos = totalCapitulosGlobal > 0 ? (capitulosConcluidosGlobal / totalCapitulosGlobal) * 100 : 0;
+                
+                progressBarCapitulos.style.width = `${percentageCapitulos}%`;
+                progressTextCapitulos.textContent = `${percentageCapitulos.toFixed(1)}% (${capitulosConcluidosGlobal} de ${totalCapitulosGlobal} capítulos)`;
+
+
+            } catch(e) {
+                console.error("Erro ao calcular progresso: ", e);
+                progressTextTotal.textContent = 'Erro ao calcular.';
+                progressTextCapitulos.textContent = 'Erro ao calcular.';
+            }
+        }
+
+        async function popularInicio() {
+            if (!currentUserId) return;
+            buscarUltimasJoias();
+            buscarUltimasPesquisas();
+            calcularProgressoTotal();
+        }
+
+        function mudarAba(abaAtiva) {
+            esconderTudo();
+            Object.values(tabs).forEach(tab => tab.classList.replace('tab-active', 'tab-inactive'));
+            
+            if (abaAtiva === 'inicio') {
+                views.inicio.classList.remove('hidden');
+                tabs.inicio.classList.replace('tab-inactive', 'tab-active');
+                popularInicio();
+            } else if (abaAtiva === 'livros') {
+                views.livros.classList.remove('hidden');
+                tabs.livros.classList.replace('tab-inactive', 'tab-active');
+                popularLivros();
+            } else if (abaAtiva === 'adicionarDestaque') {
+                views.adicionarDestaque.classList.remove('hidden');
+                tabs.adicionarDestaque.classList.replace('tab-inactive', 'tab-active');
+            } else if (abaAtiva === 'pesquisar') {
+                views.pesquisar.classList.remove('hidden');
+                tabs.pesquisar.classList.replace('tab-inactive', 'tab-active');
+            } else if (abaAtiva === 'pesquisas') {
+                views.pesquisas.classList.remove('hidden');
+                tabs.pesquisas.classList.replace('tab-inactive', 'tab-active');
+                mostrarPesquisas();
+            } else if (abaAtiva === 'adicionarPesquisa') {
+                views.adicionarPesquisa.classList.remove('hidden');
+                tabs.adicionarPesquisa.classList.replace('tab-inactive', 'tab-active');
+            }
+        }
+        
+        function iniciarAcao(type, docId, path) {
+            acaoPendente = { type, docId, path };
+            const title = type === 'delete' ? 'Confirmar Exclusão' : 'Acessar Edição';
+            document.getElementById('password-modal-title').textContent = title;
+            passwordModal.classList.remove('hidden');
+        }
+
+        function fecharModalSenha() {
+            passwordModal.classList.add('hidden');
+            document.getElementById('password-input').value = '';
+            passwordError.classList.add('hidden');
+            acaoPendente = { type: null, docId: null, path: null };
+        }
+
+        async function confirmarSenha() {
+            const password = document.getElementById('password-input').value;
+            if (password === 'estudopessoal') { 
+                const { type, docId, path } = acaoPendente;
+                fecharModalSenha();
+                if (type === 'delete') {
+                    deletarItem(docId, path);
+                } else if (type === 'edit') {
+                    abrirFormularioEdicao(docId, path);
+                }
+            } else {
+                passwordError.classList.remove('hidden');
+            }
+        }
+        
+        async function abrirFormularioEdicao(docId, collectionPath) {
+            const formEdit = document.getElementById('form-edit');
+            const modalTitle = document.getElementById('edit-modal-title');
+            formEdit.innerHTML = ''; 
+
+            try {
+                const docRef = doc(db, collectionPath, docId);
+                const docSnap = await getDoc(docRef);
+
+                if (!docSnap.exists()) {
+                    showToast("Documento não encontrado.", false);
+                    return;
+                }
+
+                const data = docSnap.data();
+                let formHTML = '';
+                const isDestaque = collectionPath.includes('destaques');
+
+                if (isDestaque) {
+                    modalTitle.textContent = 'Editar Joia';
+                    formHTML = `
+                        <input type="hidden" name="docId" value="${docId}">
+                        <input type="hidden" name="collectionPath" value="${collectionPath}">
+                        <div>
+                            <label for="edit-versiculo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Versículo(s)</label>
+                            <input type="text" id="edit-versiculo" name="versiculo" value="${data.versiculo || ''}" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <div>
+                            <label for="edit-texto" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Joia</label>
+                            <textarea id="edit-texto" name="texto" rows="6" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>${data.texto || ''}</textarea>
+                        </div>
+                    `;
+                } else { // 'pesquisas'
+                    modalTitle.textContent = 'Editar Pesquisa';
+                    formHTML = `
+                        <input type="hidden" name="docId" value="${docId}">
+                        <input type="hidden" name="collectionPath" value="${collectionPath}">
+                        <div>
+                            <label for="edit-pesquisa-titulo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Título</label>
+                            <input type="text" id="edit-pesquisa-titulo" name="titulo" value="${data.titulo || ''}" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <div>
+                            <label for="edit-pesquisa-tags" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tags</label>
+                            <input type="text" id="edit-pesquisa-tags" name="tags" value="${(data.tags || []).join(', ')}" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label for="edit-pesquisa-texto-biblico" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Texto Bíblico</label>
+                            <textarea id="edit-pesquisa-texto-biblico" name="textoBiblico" rows="3" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">${data.textoBiblico || ''}</textarea>
+                        </div>
+                         <div>
+                            <label for="edit-pesquisa-anotacoes" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Anotações</label>
+                            <textarea id="edit-pesquisa-anotacoes" name="anotacoes" rows="8" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>${data.anotacoes || ''}</textarea>
+                        </div>
+                    `;
+                }
+
+                formHTML += `
+                    <div class="flex justify-end gap-4 pt-4">
+                        <button type="button" id="cancel-edit-btn" class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500">Cancelar</button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Salvar Alterações</button>
+                    </div>
+                `;
+
+                formEdit.innerHTML = formHTML;
+                document.getElementById('cancel-edit-btn').addEventListener('click', fecharFormularioEdicao);
+                editModal.classList.remove('hidden');
+
+            } catch (error) {
+                console.error("Erro ao abrir formulário de edição:", error);
+                showToast("Erro ao carregar dados para edição.", false);
+            }
+        }
+
+        function fecharFormularioEdicao() {
+            editModal.classList.add('hidden');
+            document.getElementById('form-edit').innerHTML = '';
+        }
+
+        async function salvarEdicao(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const docId = formData.get('docId');
+            const collectionPath = formData.get('collectionPath');
+            
+            let updatedData = {};
+            const isDestaque = collectionPath.includes('destaques');
+
+            if (isDestaque) {
+                updatedData = {
+                    versiculo: formData.get('versiculo'),
+                    texto: formData.get('texto')
+                };
+            } else { // pesquisas
+                updatedData = {
+                    titulo: formData.get('titulo'),
+                    tags: formData.get('tags').split(',').map(tag => tag.trim()).filter(tag => tag),
+                    textoBiblico: formData.get('textoBiblico'),
+                    anotacoes: formData.get('anotacoes')
+                };
+            }
+
+            try {
+                const docRef = doc(db, collectionPath, docId);
+                await updateDoc(docRef, updatedData);
+                showToast("Atualizado com sucesso!");
+                fecharFormularioEdicao();
+
+                if (isDestaque) {
+                    if (!views.conteudo.classList.contains('hidden')) {
+                        mostrarConteudo(estadoAtual.livro, estadoAtual.capitulo);
+                    } else if (!views.pesquisar.classList.contains('hidden')) {
+                        formPesquisa.dispatchEvent(new Event('submit', { cancelable: true }));
+                    }
+                } else {
+                     if (!views.pesquisas.classList.contains('hidden')) {
+                        mostrarPesquisas();
+                    } else if (!views.pesquisar.classList.contains('hidden')) {
+                         formPesquisa.dispatchEvent(new Event('submit', { cancelable: true }));
+                    }
+                }
+                
+                if (!views.inicio.classList.contains('hidden')) {
+                    popularInicio();
+                }
+
+            } catch (error) {
+                console.error("Erro ao salvar edição:", error);
+                showToast("Falha ao salvar as alterações.", false);
+            }
+        }
+        
+        async function mostrarPesquisas() {
+            const container = document.getElementById('container-pesquisas');
+            container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">A carregar pesquisas...</p>';
+            try {
+                const pesquisas = await fetchDocs(publicPesquisasCollectionPath, userPesquisasCollectionPath);
+
+                container.innerHTML = '';
+                if (pesquisas.length > 0) {
+                    pesquisas.sort((a, b) => {
+                        const dateA = a.createdAt && a.createdAt.toDate ? a.createdAt.toDate() : new Date(0);
+                        const dateB = b.createdAt && b.createdAt.toDate ? b.createdAt.toDate() : new Date(0);
+                        return dateB - dateA;
+                    });
+                    
+                    pesquisas.forEach(pesquisa => {
+                        const card = criarCardPesquisa(pesquisa);
+                        container.appendChild(card);
+                    });
+                } else {
+                    container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Nenhuma pesquisa salva ainda.</p>';
+                }
+            } catch (e) {
+                console.error("Erro ao buscar pesquisas: ", e);
+                container.innerHTML = '<p class="text-red-500">Ocorreu um erro ao carregar as pesquisas.</p>';
+            }
+        }
+        
+        function initializeMainApp(user) {
+            const headerTitle = document.getElementById('header-title');
+            
+            const profileButton = document.getElementById('profile-button');
+            const profileMenu = document.getElementById('profile-menu');
+            const logoutButton = document.getElementById('profile-menu-logout');
+
+            profileButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                profileMenu.classList.toggle('hidden');
+            });
+
+            logoutButton.onclick = () => {
+                signOut(auth).catch((error) => {
+                    console.error("Erro ao sair:", error);
+                    showToast("Erro ao tentar sair.", false);
+                });
+            };
+            
+            window.addEventListener('click', (e) => {
+                if (!profileMenu.classList.contains('hidden')) {
+                    if (!profileMenu.contains(e.target) && !profileButton.contains(e.target)) {
+                        profileMenu.classList.add('hidden');
+                    }
+                }
+            });
+
+            popularSelectLivros();
+            popularInicio(); 
+
+            formDestaque.addEventListener('submit', salvarDestaque);
+            formPesquisa.addEventListener('submit', realizarPesquisa);
+            formAdicionarPesquisa.addEventListener('submit', salvarPesquisa);
+            document.getElementById('form-edit').addEventListener('submit', salvarEdicao);
+            
+            headerTitle.addEventListener('click', () => mudarAba('inicio')); 
+            tabs.inicio.addEventListener('click', (e) => { e.preventDefault(); mudarAba('inicio'); }); 
+            tabs.livros.addEventListener('click', (e) => { e.preventDefault(); mudarAba('livros'); });
+            tabs.adicionarDestaque.addEventListener('click', (e) => { e.preventDefault(); mudarAba('adicionarDestaque'); });
+            tabs.pesquisar.addEventListener('click', (e) => { e.preventDefault(); mudarAba('pesquisar'); });
+            tabs.pesquisas.addEventListener('click', (e) => { e.preventDefault(); mudarAba('pesquisas'); });
+            tabs.adicionarPesquisa.addEventListener('click', (e) => { e.preventDefault(); mudarAba('adicionarPesquisa'); });
+            
+            document.getElementById('btn-voltar-livros').addEventListener('click', () => mudarAba('livros'));
+            document.getElementById('btn-voltar-capitulos').addEventListener('click', () => {
+                const livro = estadoAtual.livro;
+                const numCapitulos = biblia["Antigo Testamento"][livro] || biblia["Novo Testamento"][livro];
+                mostrarCapitulos(livro, numCapitulos);
+            });
+            
+            document.getElementById('cancel-password-btn').addEventListener('click', fecharModalSenha);
+            document.getElementById('confirm-password-btn').addEventListener('click', confirmarSenha);
+            passwordModal.addEventListener('click', (e) => {
+                if (e.target === passwordModal) fecharModalSenha();
+            });
+            editModal.addEventListener('click', (e) => {
+                if (e.target === editModal) fecharFormularioEdicao();
+            });
+
+            selectLivro.addEventListener('change', () => {
+                const nomeLivro = selectLivro.value;
+                const todosLivros = {...biblia["Antigo Testamento"], ...biblia["Novo Testamento"]};
+                const numCapitulos = todosLivros[nomeLivro];
+
+                selectCapitulo.innerHTML = ''; 
+
+                if (numCapitulos) {
+                    selectCapitulo.disabled = false;
+                    selectCapitulo.innerHTML = '<option value="" disabled selected>Selecione</option>';
+                    for (let i = 1; i <= numCapitulos; i++) {
+                        const option = document.createElement('option');
+                        option.value = i;
+                        option.textContent = i;
+                        selectCapitulo.appendChild(option);
+                    }
+                } else {
+                    selectCapitulo.disabled = true;
+                    selectCapitulo.innerHTML = '<option value="">Selecione o livro</option>';
+                }
+            });
+
+            const searchTypeJoias = document.getElementById('search-type-joias');
+            const searchTypePesquisas = document.getElementById('search-type-pesquisas');
+
+            searchTypeJoias.addEventListener('click', () => {
+                searchTypeJoias.classList.add('active');
+                searchTypePesquisas.classList.remove('active');
+            });
+
+            searchTypePesquisas.addEventListener('click', () => {
+                searchTypePesquisas.classList.add('active');
+                searchTypeJoias.classList.remove('active');
+            });
+            
+            const visButtonsDestaque = document.querySelectorAll('.visibility-btn-destaque');
+            const hiddenInputDestaque = document.getElementById('input-visibility-destaque');
+            visButtonsDestaque.forEach(button => {
+                button.addEventListener('click', () => {
+                    visButtonsDestaque.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    hiddenInputDestaque.value = button.dataset.value;
+                });
+            });
+
+            const visButtonsPesquisa = document.querySelectorAll('.visibility-btn-pesquisa');
+            const hiddenInputPesquisa = document.getElementById('input-visibility-pesquisa');
+            visButtonsPesquisa.forEach(button => {
+                button.addEventListener('click', () => {
+                    visButtonsPesquisa.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    hiddenInputPesquisa.value = button.dataset.value;
+                });
+            });
+            
+            // ====================================================================
+            // INÍCIO DA LÓGICA DE SWIPE
+            // ====================================================================
+            let touchStartX = 0;
+            let touchStartY = 0;
+            let touchEndX = 0;
+            let touchEndY = 0;
+
+            // Ordem das abas para swipe
+            const tabOrder = [
+                'inicio', 
+                'livros', 
+                'pesquisas', 
+                'adicionarDestaque', 
+                'adicionarPesquisa', 
+                'pesquisar'
+            ];
+            
+            // Mapeamento de IDs de tabs para nomes de abas
+            const tabIdToName = {
+                'tab-inicio': 'inicio',
+                'tab-livros': 'livros',
+                'tab-pesquisas': 'pesquisas',
+                'tab-adicionar-destaque': 'adicionarDestaque',
+                'tab-adicionar-pesquisa': 'adicionarPesquisa',
+                'tab-pesquisar': 'pesquisar'
+            };
+
+            appContent.addEventListener('touchstart', (e) => {
+                // Ignora swipes em elementos com 'no-swipe' ou inputs
+                if (e.target.closest('.no-swipe') || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+                    touchStartX = 0; // Reseta para evitar swipe acidental
+                    touchStartY = 0;
+                    return;
+                }
+                touchStartX = e.changedTouches[0].screenX;
+                touchStartY = e.changedTouches[0].screenY;
+            }, { passive: true });
+
+            appContent.addEventListener('touchend', (e) => {
+                if (touchStartX === 0) return; // Não iniciou um swipe válido
+
+                if (e.target.closest('.no-swipe') || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+                    return;
+                }
+                
+                touchEndX = e.changedTouches[0].screenX;
+                touchEndY = e.changedTouches[0].screenY;
+                
+                handleSwipeGesture();
+                
+                // Reseta os valores
+                touchStartX = 0;
+                touchStartY = 0;
+            }, { passive: true });
+
+            function handleSwipeGesture() {
+                const diffX = touchEndX - touchStartX;
+                const diffY = touchEndY - touchStartY;
+                const threshold = 75; // Mínimo de pixels para considerar um swipe
+
+                // Verifica se foi um swipe mais horizontal do que vertical
+                if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > threshold) {
+                    
+                    // Encontra a aba ativa
+                    const activeTabEl = document.querySelector('.tab-active');
+                    if (!activeTabEl) return;
+                    
+                    const activeTabName = tabIdToName[activeTabEl.id];
+                    if (!activeTabName) return;
+
+                    const currentIndex = tabOrder.indexOf(activeTabName);
+                    if (currentIndex === -1) return;
+
+                    if (diffX > 0) {
+                        // Swipe para a Direita (voltar)
+                        const newIndex = (currentIndex - 1 + tabOrder.length) % tabOrder.length;
+                        mudarAba(tabOrder[newIndex]);
+                    } else {
+                        // Swipe para a Esquerda (avançar)
+                        const newIndex = (currentIndex + 1) % tabOrder.length;
+                        mudarAba(tabOrder[newIndex]);
+                    }
+                }
+            }
+            // ====================================================================
+            // FIM DA LÓGICA DE SWIPE
+            // ====================================================================
+        }
+        
+    </script>
+</body>
+
+</html>
