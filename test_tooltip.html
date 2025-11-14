@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tooltip Test</title>
+    <style>
+        /* Estilos para o Tooltip */
+        #tooltip {
+            position: fixed;
+            display: none;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border-radius: 5px;
+            z-index: 1000;
+            max-width: 300px;
+            font-size: 14px;
+            pointer-events: none; /* So the tooltip doesn't interfere with mouse events */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Tooltip Test Page</h1>
+    <p>Hover over the verse below to see the tooltip.</p>
+
+    <!-- Sample verse element -->
+    <div data-book="Gênesis" data-chapter="1" data-verse="1">
+        <p class="font-bold text-blue-600 dark:text-blue-400">Versículo(s) 1</p>
+    </div>
+
+    <div id="tooltip"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tooltip = document.getElementById('tooltip');
+            if (!tooltip) return;
+
+            // This function will fetch bible data from local JSON files
+            const bibleCache = {};
+            const bookAbbrMap = {
+                "Gênesis": "ge", "Êxodo": "ex", "Levítico": "le", "Números": "nu", "Deuteronômio": "de",
+                "Josué": "jos", "Juízes": "jg", "Rute": "ru", "1 Samuel": "1sa", "2 Samuel": "2sa",
+                "1 Reis": "1ki", "2 Reis": "2ki", "1 Crônicas": "1ch", "2 Crônicas": "2ch", "Esdras": "ezr",
+                "Neemias": "ne", "Ester": "es", "Jó": "job", "Salmos": "ps", "Provérbios": "pr",
+                "Eclesiastes": "ec", "Cântico de Salomão": "ca", "Isaías": "isa", "Jeremias": "jer",
+                "Lamentações": "la", "Ezequiel": "eze", "Daniel": "da", "Oseias": "ho", "Joel": "joe",
+                "Amós": "am", "Obadias": "ob", "Jonas": "jon", "Miqueias": "mic", "Naum": "na",
+                "Habacuque": "hab", "Sofonias": "zep", "Ageu": "hag", "Zacarias": "zec", "Malaquias": "mal",
+                "Mateus": "mt", "Marcos": "mr", "Lucas": "lu", "João": "joh", "Atos": "ac",
+                "Romanos": "ro", "1 Coríntios": "1co", "2 Coríntios": "2co", "Gálatas": "ga", "Efésios": "eph",
+                "Filipenses": "php", "Colossenses": "col", "1 Tessalonicenses": "1th", "2 Tessalonicenses": "2th",
+                "1 Timóteo": "1ti", "2 Timóteo": "2ti", "Tito": "tit", "Filemom": "phm", "Hebreus": "heb",
+                "Tiago": "jas", "1 Pedro": "1pe", "2 Pedro": "2pe", "1 João": "1jo", "2 João": "2jo",
+                "3 João": "3jo", "Judas": "jude", "Apocalipse": "re"
+            };
+            async function getBibleData(book) {
+                const abbr = bookAbbrMap[book];
+                if (!abbr) return null;
+
+                if (bibleCache[abbr]) {
+                    return bibleCache[abbr];
+                }
+                try {
+                    const response = await fetch(`bible_json/${abbr}.json`);
+                    if (!response.ok) {
+                        throw new Error(`Could not load bible data for ${book}`);
+                    }
+                    const data = await response.json();
+                    bibleCache[book] = data;
+                    return data;
+                } catch (error) {
+                    console.error('Error loading Bible data:', error);
+                    return null;
+                }
+            }
+
+            async function showTooltip(target) {
+                const book = target.dataset.book;
+                const chapter = target.dataset.chapter;
+                const verseRange = target.dataset.verse; // e.g., "5" or "5,6" or "5-7"
+
+                if (!book || !chapter || !verseRange) return;
+
+                const bibleData = await getBibleData(book);
+
+                if (!bibleData || !bibleData[chapter]) {
+                    tooltip.style.display = 'none';
+                    return;
+                }
+
+                // Handle verse ranges
+                let verseText = '';
+                const verses = verseRange.split(/[,-]/).map(v => parseInt(v.trim()));
+
+                if (verseRange.includes('-')) { // Range like 5-7
+                     for (let i = verses[0]; i <= verses[1]; i++) {
+                        if(bibleData[chapter][i]) {
+                             verseText += `<b>${i}</b> ${bibleData[chapter][i]}<br>`;
+                        }
+                    }
+                } else { // Single verses or comma separated like 5 or 5,6
+                     verses.forEach(v => {
+                        if(bibleData[chapter][v]) {
+                            verseText += `<b>${v}</b> ${bibleData[chapter][v]}<br>`;
+                        }
+                     });
+                }
+
+
+                if (verseText) {
+                    tooltip.innerHTML = `<b>${book} ${chapter}:${verseRange}</b><br>${verseText}`;
+                    tooltip.style.display = 'block';
+                } else {
+                    tooltip.style.display = 'none';
+                }
+            }
+
+            function hideTooltip() {
+                tooltip.style.display = 'none';
+            }
+
+            function updateTooltipPosition(e) {
+                 if (tooltip.style.display === 'block') {
+                    // Position tooltip relative to the viewport
+                    let x = e.clientX;
+                    let y = e.clientY;
+
+                    // Add offsets to position it nicely next to the cursor
+                    tooltip.style.left = (x + 15) + 'px';
+                    tooltip.style.top = (y + 15) + 'px';
+
+                    // Reposition if it overflows the viewport
+                    const tooltipRect = tooltip.getBoundingClientRect();
+                    const viewportWidth = window.innerWidth;
+                    const viewportHeight = window.innerHeight;
+
+                    if (tooltipRect.right > viewportWidth) {
+                        tooltip.style.left = (x - tooltipRect.width - 15) + 'px';
+                    }
+                    if (tooltipRect.bottom > viewportHeight) {
+                        tooltip.style.top = (y - tooltipRect.height - 15) + 'px';
+                    }
+                }
+            }
+
+            // Use event delegation on the body
+            document.body.addEventListener('mouseover', (e) => {
+                const target = e.target.closest('[data-verse]');
+                if (target) {
+                    showTooltip(target);
+                }
+            });
+
+            document.body.addEventListener('mouseout', (e) => {
+                const target = e.target.closest('[data-verse]');
+                if (target) {
+                    hideTooltip();
+                }
+            });
+
+            document.body.addEventListener('mousemove', updateTooltipPosition);
+        });
+    </script>
+</body>
+</html>

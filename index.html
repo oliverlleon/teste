@@ -1216,6 +1216,9 @@
                 `;
             }
 
+            card.setAttribute('data-book', livro);
+            card.setAttribute('data-chapter', capitulo);
+            card.setAttribute('data-verse', versiculo);
             card.innerHTML = `
                 <div class="flex justify-between items-start mb-2">
                     <p class="font-bold text-blue-600 dark:text-blue-400">Versículo(s) ${versiculo}</p>
